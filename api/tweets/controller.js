@@ -61,15 +61,26 @@ const createComment = (req, res) => {
 const likes = (req, res) => {
   const { like, tweetId } = req.body;
 
-  Tweet.updateOne({ _id: tweetId }, { $inc: { likes: 1 } })
-    .then(() => {
-      res.status(200).json({ message: "ok" });
-    })
-    .catch((error) => {
-      res.status(500).json({ message: "not updated" });
-    });
+  if (like === 1) {
+    Tweet.updateOne({ _id: tweetId }, { $inc: { likes: 1 } })
+      .then(() => {
+        res.status(200).json({ message: "like added" });
+      })
+      .catch(() => {
+        res.status(500).json({ message: "not updated" });
+      });
+  } else if (like === 0) {
+    Tweet.updateOne({ _id: tweetId }, { $inc: { likes: -1 } })
+      .then(() => {
+        res.status(200).json({ message: "like removed" });
+      })
+      .catch(() => {
+        res.status(500).json({ message: "not updated" });
+      });
+  } else {
+    res.status(400).json({ message: "invalid like value" });
+  }
 };
-
 const destroyTweet = async (req, res) => {
   const { tweetId, userId } = req.body;
 
